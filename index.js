@@ -26,6 +26,25 @@ async function run() {
     await client.connect();
 
     const productCollection = client.db("ProductDB").collection("product");
+    const addedCartCollection = client.db("ProductDB").collection("cart");
+
+    // cart section
+    app.post("/carts", async (req, res) => {
+      const addedCartProduct = req.body;
+      const result = await addedCartCollection.insertOne(addedCartProduct);
+    });
+
+    app.delete("/carts/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await addedCartCollection.deleteOne(query);
+      res.send(result);
+    });
+    app.get("/carts", async (req, res) => {
+      const cursor = addedCartCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
 
     app.get("/products", async (req, res) => {
       const cursor = productCollection.find();
