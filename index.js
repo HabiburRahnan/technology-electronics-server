@@ -29,23 +29,24 @@ async function run() {
     const addedCartCollection = client.db("ProductDB").collection("cart");
 
     // cart section
-    app.post("/carts", async (req, res) => {
-      const addedCartProduct = req.body;
-      const result = await addedCartCollection.insertOne(addedCartProduct);
-    });
 
-    app.delete("/carts/:id", async (req, res) => {
-      const id = req.params.id;
-      const query = { _id: new ObjectId(id) };
-      const result = await addedCartCollection.deleteOne(query);
-      res.send(result);
-    });
     app.get("/carts", async (req, res) => {
       const cursor = addedCartCollection.find();
       const result = await cursor.toArray();
       res.send(result);
     });
 
+    app.delete("/carts/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: id };
+      const result = await addedCartCollection.deleteOne(query);
+      res.send(result);
+    });
+
+    app.post("/carts", async (req, res) => {
+      const addedCartProduct = req.body;
+      const result = await addedCartCollection.insertOne(addedCartProduct);
+    });
     app.get("/products", async (req, res) => {
       const cursor = productCollection.find();
       const result = await cursor.toArray();
@@ -74,7 +75,7 @@ async function run() {
         $set: {
           name: updatedProduct.name,
           brand: updatedProduct.brand,
-          description: updatedProduct,
+          description: updatedProduct.description,
           price: updatedProduct.price,
           type: updatedProduct.type,
           photo: updatedProduct.photo,
